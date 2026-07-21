@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Roshambeaux</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='Style.css') }}">
+</head>
+
+<body>
+{% if not rounds %}
+
+    <h1>Welcome to Roshambeaux!</h1>
+    <h2>Attain a 65% win rate to pass.</h2>
+    <h3>(Ties count against you)</h3>
+
+    <form method="POST">
+        <h2>How many rounds would you like to play?</h2>
+
+        <input
+            type="number"
+            name="rounds"
+            min="1"
+            required
+        >
+
+        <button type="submit"> Start Game </button>
+    </form>
+
+{% else %}
+
+    {% if not finished %}
+
+        <h1>Roshambeaux</h1>
+
+        {% if not waiting %}
+
+            <h2> Round {{ round }} / {{ rounds }} </h2>
+
+            <form method="POST">
+                <button type="submit" name="choice" value="rock">Rock</button>
+                <button type="submit" name="choice" value="paper">Paper</button>
+                <button type="submit" name="choice" value="scissors">Scissors</button>
+            </form>
+
+        {% endif %}
+
+    {% endif %}
+
+    {% if game %}
+
+    <div class="game-card" id="round-card">
+
+        <h2>Round Result</h2>
+
+        <div class="battle">
+            <div>
+                <h3>You</h3>
+                <p>You chose: {{ game["user"].title() }}</p>
+            </div>
+
+            <div>
+                <h3>Computer</h3>
+                <p> Computer chose:<span id="computer-choice"> #$@!&* </span> </p>
+            </div>
+        </div>
+
+        <div id="countdown"></div>
+
+        <h3 id="battle" style="display:none;"></h3>
+        <h3 id="result" style="display:none;">{{ game["result"] }}</h3>
+
+        {% if waiting %}
+
+            {% if round < rounds %}
+
+                <form method="POST" id="next-form" style="display:none;">
+                    <button type="submit" name="next">Next Round</button>
+                </form>
+
+            {% else %}
+
+                <form method="POST" id="final-form" style="display:none;">
+                    <button type="submit" name="final">Final Standings</button>
+                </form>
+
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+    {% if finished %}
+
+    <div class="game-card" id="final-result" style="display:none;">
+        <h4>Game Over!</h4>
+        <h2 id="final-verdict">You...</h2>
+        <p id="win-rate" style="display:none;">Win Rate: {{ "%.1f"|format(win_rate) }}%</p>
+    </div>
+
+    <div class="score-card" id="final-score" style="display:none;">
+        <h2>Score</h2>
+        <p>Wins: {{ wins }}</p>
+        <p>Losses: {{ losses }}</p>
+        <p>Ties: {{ ties }}</p>
+    </div>
+
+    {% endif %}
+
+{% endif %}
+
+{% if game %}
+
+<script>
+let userChoice = "{{ game['user'].title() }}";
+let computerChoice = "{{ game['computer'].title() }}";
+let countdown = document.getElementById("countdown");
+let battle = document.getElementById("battle");
+let result = document.getElementById("result");
+let nextButton = document.getElementById("next-form");
+let finalButton = document.getElementById("final-form");
+let words = ["Rock...", "Paper...", "Scissors...", "Shoot!"];
+let count = 0;
+
+countdown.innerHTML = "";
+
+let animation = setInterval(function(){
+    countdown.innerHTML += words[count] + "<br>";
+    count++;
+
+    if(count >= words.length){
+        clearInterval(animation);
+        setTimeout(function(){
+
+            battle.textContent =
+                userChoice + " vs " + computerChoice;
+
+            battle.style.display = "block";
+            result.style.display = "block";
+
+            if(nextButton){nextButton.style.display = "block";}
+            if(finalButton){finalButton.style.display = "block";}
+        },500);
+    }
+},500);
+</script>
+
+{% endif %}
+
+{% if finished %}
+
+<script>
+let finalResult = document.getElementById("final-result");
+let finalVerdict = document.getElementById("final-verdict");
+let finalScore = document.getElementById("final-score");
+let winRate = document.getElementById("win-rate");
+
+setTimeout(function(){
+    finalResult.style.display = "block";
+
+    setTimeout(function(){
+        let passedStatus = "{{ 'true' if win_rate >= 65 else 'false' }}";
+
+        if(passedStatus === "true"){finalVerdict.textContent = "You Passed!";}
+        else{finalVerdict.textContent = "You Failed.";}
+
+        setTimeout(function(){
+            winRate.style.display = "block";
+
+            setTimeout(function(){finalScore.style.display = "block";},2500);
+        },2500);
+    },1500);
+},500);
+</script>
+
+{% endif %}
+</body>
+
+</html>
