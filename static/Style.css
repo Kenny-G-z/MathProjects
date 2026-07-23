@@ -163,3 +163,40 @@ button:active {
     text-shadow:
         0 0 6px rgba(122,0,255,.5);
 }
+
+.footer-line {
+    margin-top: 60px;
+    width: 80%;
+    border: none;
+    height: 2px;
+    background: #7a00ff;
+    box-shadow:
+        0 0 8px #7a00ff,
+        0 0 15px rgba(0,247,255,.5);
+}
+
+footer {
+    margin-top: 25px;
+    font-size: 22px;
+    color: #d9d9ff;
+    text-shadow:
+        0 0 5px rgba(0,247,255,.5),
+        0 0 12px rgba(122,0,255,.5);
+}
+
+footer a {
+    color: #00f7ff;
+    text-decoration: none;
+    font-size: 22px;
+    transition: .25s ease;
+    text-shadow:
+        0 0 5px #00f7ff,
+        0 0 12px rgba(122,0,255,.6);
+}
+
+footer a:hover {
+    color: #ff4df8;
+    text-shadow:
+        0 0 8px #ff4df8,
+        0 0 18px rgba(122,0,255,.7);
+}
